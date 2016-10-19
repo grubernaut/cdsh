@@ -1,0 +1,37 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "AdGHWN2jhP4JJINo1Tgscfh35FQ=",
+			"path": "github.com/grubernaut/gdsh/dsh",
+			"revision": "2c33d82aa1b966d61f8ac032e297f3619f19d875",
+			"revisionTime": "2016-09-16T05:34:18Z"
+		},
+		{
+			"checksumSHA1": "gKfOzXWPLnci9lQuwJjW5zBgAcE=",
+			"path": "github.com/hashicorp/consul/api",
+			"revision": "41f1764434246ba7ee91625fb9a23d94ae6d6e19",
+			"revisionTime": "2016-10-13T15:02:20Z"
+		},
+		{
+			"checksumSHA1": "Uzyon2091lmwacNsl1hCytjhHtg=",
+			"path": "github.com/hashicorp/go-cleanhttp",
+			"revision": "ad28ea4487f05916463e2423a55166280e8254b5",
+			"revisionTime": "2016-04-07T17:41:26Z"
+		},
+		{
+			"checksumSHA1": "E3Xcanc9ouQwL+CZGOUyA/+giLg=",
+			"path": "github.com/hashicorp/serf/coordinate",
+			"revision": "1d4fa605f6ff3ed628d7ae5eda7c0e56803e72a5",
+			"revisionTime": "2016-10-07T00:41:22Z"
+		},
+		{
+			"checksumSHA1": "J1irW4tyCsDzaVDu6olx5fG2Nrs=",
+			"path": "gopkg.in/urfave/cli.v2",
+			"revision": "c72728f42438425ffcd487986936357e17ebba3f",
+			"revisionTime": "2016-08-31T17:44:05Z"
+		}
+	],
+	"rootPath": "github.com/grubernaut/cdsh"
+}
