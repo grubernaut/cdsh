@@ -16,7 +16,7 @@ Be sure that you're actually able to SSH to the target consul service. (SSH Keys
 
 ### Options
 
-* `--server` / `-s`: Consul server to query against (Required)
+* `--server` / `-s`: Consul server to query against. Required. Can also use `CONSUL_SERVER`, but environment variable takes priority.
 * `--service` / `-S`: Target service to run command against
 * `--user` / `-u`: Remote user to connect as. If unspecified, defaults to current local user
 
