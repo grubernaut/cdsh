@@ -38,8 +38,8 @@ func run(c *cli.Context) error {
 		return cli.ShowAppHelp(c)
 	}
 
-	// Create a consul client
-	client, err := consulClient(consulServer)
+	// Create a consul catalog client
+	catalog, err := consulCatalog(consulServer)
 	if err != nil {
 		return cli.Exit(fmt.Sprintf(
 			"Error creating consul agent: %s\n", err,
@@ -50,7 +50,7 @@ func run(c *cli.Context) error {
 	service := c.String("service")
 	if service == "" {
 		fmt.Printf("No service specified. Available services:\n")
-		avail, err := consulServices(client)
+		avail, err := consulServices(catalog)
 		if err != nil {
 			return cli.Exit(fmt.Sprintf(
 				"Error querying Consul services: %s\n", err,
@@ -63,7 +63,7 @@ func run(c *cli.Context) error {
 	}
 
 	// Add consul services to linked list
-	machineList, err := populateList(client, service, c.String("user"))
+	machineList, err := populateList(catalog, service, c.String("user"))
 	if err != nil {
 		return cli.Exit(fmt.Sprintf(
 			"Error populating DSH machine list: %s\n", err,
@@ -79,6 +79,11 @@ func run(c *cli.Context) error {
 			continue
 		}
 		opts.RemoteCommand = fmt.Sprintf("%s %s", opts.RemoteCommand, v)
+	}
+
+	if machineList.Len() < 1 {
+		return cli.Exit(fmt.Sprintf(
+			"No servers found for service %s", service), 1)
 	}
 
 	// Execute DSH!
@@ -100,9 +105,7 @@ func defaultDSHConfig() dsh.ExecOpts {
 }
 
 // Returns all available consul services
-func consulServices(client *consul.Client) (map[string][]string, error) {
-	// Create catalog
-	catalog := client.Catalog()
+func consulServices(catalog *consul.Catalog) (map[string][]string, error) {
 	services, _, err := catalog.Services(nil)
 	if err != nil {
 		return nil, err
@@ -111,31 +114,31 @@ func consulServices(client *consul.Client) (map[string][]string, error) {
 }
 
 // Returns a Consul Client
-func consulClient(server string) (*consul.Client, error) {
+func consulCatalog(server string) (*consul.Catalog, error) {
 	// Create Consul Client
 	config := consul.DefaultConfig()
 	config.Address = server
-	return consul.NewClient(config)
+	client, err := consul.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+	return client.Catalog(), nil
 }
 
 // Populates doubly linked machine list, with a list of requested consul services's addresses
-func populateList(client *consul.Client, service string, user string) (*list.List, error) {
-	// Create consul agent
-	agent := client.Agent()
-	services, err := agent.Services()
+func populateList(catalog *consul.Catalog, service string, user string) (*list.List, error) {
+	services, _, err := catalog.Service(service, "", nil)
 	if err != nil {
 		return nil, fmt.Errorf("Error querying consul services: %s", err)
 	}
 
 	serviceList := list.New()
 	for _, v := range services {
-		if v.Service == service {
-			remoteAddr := v.Address
-			if user != "" {
-				remoteAddr = fmt.Sprintf("%s@%s", user, remoteAddr)
-			}
-			addList(serviceList, remoteAddr)
+		remoteAddr := v.Address
+		if user != "" {
+			remoteAddr = fmt.Sprintf("%s@%s", user, remoteAddr)
 		}
+		addList(serviceList, remoteAddr)
 	}
 
 	return serviceList, nil
